@@ -13,7 +13,7 @@ dependencies {
     val tdlightVersion = project.property("tdlight_version")
     implementation(platform("it.tdlight:tdlight-java-bom:${tdlightVersion}"))
     implementation("it.tdlight:tdlight-java:${tdlightVersion}}")
-    implementation("it.tdlight:tdlight-natives:4.0.374:windows_amd64")
+    implementation("it.tdlight:tdlight-natives:4.0.506:windows_amd64")
 }
 
 
