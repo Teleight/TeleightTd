@@ -14,6 +14,7 @@ import org.teleight.td.api.updates.UpdateHandler;
 import org.teleight.td.bot.settings.BotSettings;
 import org.teleight.td.bot.settings.TdSettings;
 import org.teleight.td.bot.settings.UserSettings;
+import org.teleight.td.commands.CommandHandler;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -43,19 +44,50 @@ public class TeleightClientImpl implements TeleightClient {
         Log.disable();
     }
 
+    /*
+    UPDATES
+    */
 
-    public <T extends TdApi.Update> void UNSAFE_addUpdateHandler(@NotNull Class<T> updateType, @NotNull GenericUpdateHandler<? super T> handler) {
-        tdUpdateHandler.UNSAFE_addUpdateHandler(updateType, handler);
-    }
-
+    @Override
     public <U extends ApiUpdate<T, R>, T extends TdApi.Update, R extends ApiUpdate.Result> void addUpdateHandler(@NotNull Class<U> updateType, @NotNull UpdateHandler<R> updateHandler) {
         tdUpdateHandler.addUpdateHandler(updateType, updateHandler);
     }
 
+    @Override
+    public <T extends TdApi.Update> void UNSAFE_addUpdateHandler(@NotNull Class<T> updateType, @NotNull GenericUpdateHandler<? super T> handler) {
+        tdUpdateHandler.UNSAFE_addUpdateHandler(updateType, handler);
+    }
+
+    /*
+    COMMANDS
+    */
+
+    @Override
+    public void addCommandHandler(@NotNull String commandName, @NotNull CommandHandler updateHandler) {
+        tdUpdateHandler.addCommandHandler(commandName, updateHandler);
+    }
+
+    @Override
+    public void UNSAFE_addCommandHandler(@NotNull String commandName, @NotNull it.tdlight.client.CommandHandler updateHandler) {
+        tdUpdateHandler.UNSAFE_addCommandHandler(commandName, updateHandler);
+    }
+
+
+    /*
+    SEND
+    */
+
+    @Override
+    public <R extends TdApi.Object> void send(TdApi.@NotNull Function<R> function, GenericResultHandler<R> resultHandler) {
+        client.send(function, resultHandler);
+    }
+
+    @Override
     public <R extends TdApi.Object> CompletableFuture<R> send(@NotNull TdApi.Function<R> function) {
         return client.send(function);
     }
 
+    @Override
     public <F extends TdApi.Function<O>, O extends TdApi.Object, R extends ApiObject> CompletableFuture<R> send(@NotNull ApiMethod<F, O, R> function) {
         CompletableFuture<R> result = new CompletableFuture<>();
 
@@ -118,7 +150,7 @@ public class TeleightClientImpl implements TeleightClient {
                 var client = clientBuilder.build(authenticationSupplier);
 
                 this.client = client;
-                tdUpdateHandler = new TdUpdateHandler(client);
+                tdUpdateHandler = new TdUpdateHandler(this,client);
 
                 synchronized (AUTH_LOCK) {
                     AUTH_LOCK.notifyAll();

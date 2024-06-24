@@ -5,19 +5,24 @@ import it.tdlight.client.SimpleTelegramClient;
 import it.tdlight.jni.TdApi;
 import org.jetbrains.annotations.NotNull;
 import org.teleight.td.api.ApiUpdate;
+import org.teleight.td.api.objects.Chat;
+import org.teleight.td.api.objects.message.sender.MessageSender;
 import org.teleight.td.api.updates.UpdateHandler;
 import org.teleight.td.api.updates.UpdateNewMessage;
+import org.teleight.td.commands.CommandHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 class TdUpdateHandler {
 
+    private final TeleightClient teleightClient;
     private final SimpleTelegramClient internalClient;
 
     private final Map<Class<? extends ApiUpdate<?, ?>>, ApiUpdate<?, ?>> wrappedHandlers = new HashMap<>();
 
-    public TdUpdateHandler(SimpleTelegramClient internalClient) {
+    public TdUpdateHandler(TeleightClient teleightClient, SimpleTelegramClient internalClient) {
+        this.teleightClient = teleightClient;
         this.internalClient = internalClient;
 
         UNSAFE_addUpdateHandler(TdApi.UpdateAuthorizationState.class, this::handleAuthorization);
@@ -25,9 +30,9 @@ class TdUpdateHandler {
         wrappedHandlers.put(UpdateNewMessage.class, new UpdateNewMessage());
     }
 
-    public <T extends TdApi.Update> void UNSAFE_addUpdateHandler(@NotNull Class<T> updateType, @NotNull GenericUpdateHandler<? super T> handler) {
-        internalClient.addUpdateHandler(updateType, handler);
-    }
+    /*
+    UPDATES
+    */
 
     public <T extends ApiUpdate<U, R>, U extends TdApi.Update, R extends ApiUpdate.Result> void addUpdateHandler(@NotNull Class<T> updateType, @NotNull UpdateHandler<R> updateHandler) {
         //noinspection unchecked
@@ -40,6 +45,30 @@ class TdUpdateHandler {
             var wrappedUpdate = wrappedHandler.wrapUpdate(originalResponse);
             updateHandler.handle(wrappedUpdate);
         });
+    }
+
+    public <T extends TdApi.Update> void UNSAFE_addUpdateHandler(@NotNull Class<T> updateType, @NotNull GenericUpdateHandler<? super T> handler) {
+        internalClient.addUpdateHandler(updateType, handler);
+    }
+
+    /*
+    COMMANDS
+    */
+
+    public <T extends TdApi.Update> void addCommandHandler(@NotNull String commandName, @NotNull CommandHandler handler) {
+        UNSAFE_addCommandHandler(commandName, (chat, messageSender, message) -> {
+            final var wrappedChat = Chat.fromTdObject(chat);
+            final var wrappedMessageSender = MessageSender.fromTdObject(messageSender);
+            try {
+                handler.onCommand(teleightClient, wrappedChat, wrappedMessageSender, message);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public <T extends TdApi.Update> void UNSAFE_addCommandHandler(@NotNull String commandName, @NotNull it.tdlight.client.CommandHandler handler) {
+        internalClient.addCommandHandler(commandName, handler);
     }
 
 
