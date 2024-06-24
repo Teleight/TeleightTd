@@ -43,7 +43,11 @@ class TdUpdateHandler {
         var originalUpdateType = wrappedHandler.getOriginalUpdateType();
         UNSAFE_addUpdateHandler(originalUpdateType, originalResponse -> {
             var wrappedUpdate = wrappedHandler.wrapUpdate(originalResponse);
-            updateHandler.handle(wrappedUpdate);
+            try {
+                updateHandler.handle(wrappedUpdate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         });
     }
 
