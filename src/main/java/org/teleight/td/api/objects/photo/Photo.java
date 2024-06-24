@@ -12,8 +12,8 @@ public record Photo(
 ) implements ApiObject {
 
     public static @NotNull Photo fromTdObject(@NotNull TdApi.Photo photo) {
-        final PhotoSize[] photoSizes = new PhotoSize[photo.sizes.length];
         final var tdPhotoSizes = photo.sizes;
+        final PhotoSize[] photoSizes = new PhotoSize[tdPhotoSizes.length];
         for (int i = 0; i < tdPhotoSizes.length; i++) {
             photoSizes[i] = PhotoSize.fromTdObject(tdPhotoSizes[i]);
         }
