@@ -12,4 +12,8 @@ public record FormattedText(
         return new FormattedText(formattedText.text);
     }
 
+    public @NotNull TdApi.FormattedText toTdObject() {
+        return new TdApi.FormattedText(text, new TdApi.TextEntity[0]);
+    }
+
 }
