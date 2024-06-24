@@ -12,13 +12,13 @@ public record File(
         RemoteFile remote
 ) implements ApiObject {
 
-    public static @NotNull File fromTdObject(@NotNull TdApi.File photo) {
+    public static @NotNull File fromTdObject(@NotNull TdApi.File file) {
         return new File(
-                photo.id,
-                photo.size,
-                photo.expectedSize,
-                LocalFile.fromTdObject(photo.local),
-                RemoteFile.fromTdObject(photo.remote)
+                file.id,
+                file.size,
+                file.expectedSize,
+                LocalFile.fromTdObject(file.local),
+                RemoteFile.fromTdObject(file.remote)
         );
     }
 
