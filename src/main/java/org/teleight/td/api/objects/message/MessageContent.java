@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.teleight.td.api.ApiObject;
 import org.teleight.td.api.objects.message.audio.MessageAudio;
+import org.teleight.td.api.objects.message.document.MessageDocument;
 import org.teleight.td.api.objects.message.photo.MessagePhoto;
 import org.teleight.td.api.objects.message.video.MessageVideo;
 
@@ -16,6 +17,7 @@ public interface MessageContent extends ApiObject {
             case TdApi.MessagePhoto messagePhoto -> MessagePhoto.fromTdObject(messagePhoto);
             case TdApi.MessageAudio messageAudio -> MessageAudio.fromTdObject(messageAudio);
             case TdApi.MessageVideo messageVideo -> MessageVideo.fromTdObject(messageVideo);
+            case TdApi.MessageDocument messageDocument -> MessageDocument.fromTdObject(messageDocument);
             default -> null;
         };
     }
