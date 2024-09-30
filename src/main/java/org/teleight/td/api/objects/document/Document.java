@@ -16,11 +16,22 @@ public record Document(
 ) implements ApiObject {
 
     public static @NotNull Document fromTdObject(@NotNull TdApi.Document document) {
+        final var tdMinithumbnail = document.minithumbnail;
+        Minithumbnail minithumbnail = null;
+        if(tdMinithumbnail != null){
+            minithumbnail = Minithumbnail.fromTdObject(tdMinithumbnail);
+        }
+
+        final var tdThumbnail = document.thumbnail;
+        Thumbnail thumbnail = null;
+        if(tdThumbnail != null) {
+            thumbnail = Thumbnail.fromTdObject(tdThumbnail);
+        }
         return new Document(
                 document.fileName,
                 document.mimeType,
-                Minithumbnail.fromTdObject(document.minithumbnail),
-                Thumbnail.fromTdObject(document.thumbnail),
+                minithumbnail,
+                thumbnail,
                 File.fromTdObject(document.document)
         );
     }
