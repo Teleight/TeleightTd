@@ -14,7 +14,6 @@ public record InputMessagePhoto(
         boolean hasSpoiler
 ) implements InputMessageContent {
 
-
     @Override
     public TdApi.@NotNull InputMessageContent toTdObject() {
         return new TdApi.InputMessagePhoto(photo.toTdObject(), null, addedStickerFileIds, width, height, caption.toTdObject(), null, hasSpoiler);
